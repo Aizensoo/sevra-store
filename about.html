@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap" rel="stylesheet">
+    <style>
+
+        body {
+      font-family: "Oswald", sans-serif;
+      background: rgb(255, 255, 255);
+      margin: 0;
+      padding: 0;
+      text-align: center;
+      font-size: 2em;
+    }
+    </style>
+</head>
+<body>
+    <header> 
+    <a href="index.html" class="logo">Sevra</a>
+    <button class="hamburger">☰</button>   
+    <nav class="menu">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="#">Contact</a>
+    </header>
+    <div>
+        <h1>ABOUT US </h1>
+        <p>Welcome to Sevra Store! We are dedicated to providing you with the best products and services. Our mission is to enhance your lifestyle with quality and affordability.</p>
+        <p>At Sevra, we believe in customer satisfaction and strive to exceed your expectations. Our team is passionate about curating a diverse range of products that cater to your needs.</p>
+        <p>Thank you for choosing Sevra Store. We look forward to serving you!</p>
+        
+    </div>
+    <footer>
+    &copy; 2024 Sevra Store. All rights reserved.
+    </footer>
+<script>
+    const hamburger = document.querySelector('.hamburger');
+    const menu = document.querySelector('.menu');
+    
+    hamburger.addEventListener('click', () => {
+        menu.classList.toggle('show');
+    });
+</script>
+</body>
+</html>

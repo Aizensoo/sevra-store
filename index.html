@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sevra Store</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap" rel="stylesheet">
+  <style>
+    /* زر الوضع الليلي */
+    .dark-mode-toggle {
+      margin-left: 10px;
+      cursor: pointer;
+      background: #444;
+      color: #000000;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: "Oswald", sans-serif;
+      transition: background 0.3s ease;
+    }
+    .dark-mode-toggle:hover {
+      background: #666;
+    }
+
+    /* تنسيقات الوضع الليلي */
+    body.dark {
+      background: #121212;
+      color: #eee;
+    }
+    body.dark header {
+      background: #222;
+    }
+    body.dark footer {
+      background: #222;
+    }
+    body.dark .grid-item {
+      background: #333;
+      color: #fff;
+    }
+    body.dark p {
+      color: #ddd;
+    }
+
+    /* السيرش بار */
+    .search-container {
+      text-align: center;
+      margin: 20px auto;
+    }
+    #search {
+      padding: 10px;
+      width: 80%;
+      max-width: 400px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      outline: none;
+      font-family: "Oswald", sans-serif;
+      transition: border-color 0.3s ease;
+    }
+    #search:focus {
+      border-color: #3e007491;
+    }
+    #search::placeholder {
+      color: #aaa;
+      font-style: italic;
+      font-family: "Oswald", sans-serif;}
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <a href="#"><div class="logo">Sevra</div></a>
+    <div>
+      <button class="dark-mode-toggle" id="toggleDark">🌙</button>
+      <button class="hamburger">☰</button>
+    </div>
+    <nav class="menu">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="#">Contact</a>
+    </nav>
+  </header>
+
+  <!-- Background Particles -->
+  <div id="particles-js"></div>
+
+  <!-- Hero Section -->
+  <main>
+    <section class="hero">
+      <h2>Welcome to Sevra</h2>
+      <p>Your ultimate destination for the best products.</p>
+      <button><a href="promotions.html">Explore Now</a></button>
+    </section>
+
+    <!-- Search Bar -->
+    <div class="search-container">
+      <input type="text" id="search" placeholder="Search products...">
+    </div>
+
+    <!-- Products Section -->
+    <section class="products">
+      <h2>Our Products</h2>
+      <div id="product-list" class="grid-container"></div>
+    </section>
+
+    <!-- Features -->
+    <section class="features">
+      <div class="feature">
+        <h3>Wide Selection</h3>
+        <p>Choose the products you like from a vast library.</p>
+      </div>
+      <div class="feature">
+        <h3>Quality Assurance</h3>
+        <p>We ensure that all products meet high-quality standards.</p>
+      </div>
+      <div class="feature">
+        <h3>Customer Support</h3>
+        <p>Our support team is here to help you 24/7.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2024 Sevra. All rights reserved.</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <script src="app.js"></script>
+  <script>
+  // Hamburger Menu
+  const hamburger = document.querySelector('.hamburger');
+  const menu = document.querySelector('.menu');
+  hamburger.addEventListener('click', () => {
+    menu.classList.toggle('show');
+  });
+
+  // Load products dynamically
+  let allProducts = [];
+
+  async function loadProducts() {
+    try {
+      const res = await fetch("https://dummyjson.com/products?limit=20");
+      const data = await res.json();
+      allProducts = data.products;
+      displayProducts(allProducts);
+    } catch (error) {
+      console.error("Error loading products:", error);
+    }
+  }
+
+  function displayProducts(products) {
+    const container = document.getElementById("product-list");
+    container.innerHTML = "";
+    products.forEach(product => {
+      const item = document.createElement("article");
+      item.className = "grid-item";
+      item.innerHTML = `
+        <h3>${product.title}</h3>
+        <img src="${product.thumbnail}" alt="${product.title}">
+        <p>${product.description.substring(0, 60)}...</p>
+        <p><strong>${product.price} $</strong></p>
+        <a href="product.html?id=${product.id}" class="btn">Buy Now</a>
+      `;
+      container.appendChild(item);
+    });
+  }
+
+  // Search functionality
+  const searchInput = document.getElementById("search");
+  searchInput.addEventListener("input", e => {
+    const term = e.target.value.toLowerCase();
+    const filtered = allProducts.filter(p => 
+      p.title.toLowerCase().includes(term) || 
+      p.description.toLowerCase().includes(term)
+    );
+    displayProducts(filtered);
+  });
+
+  // Dark mode toggle
+  const toggleDark = document.getElementById("toggleDark");
+  toggleDark.addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+    toggleDark.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
+  });
+
+  loadProducts();
+  </script>
+</body>
+</html>

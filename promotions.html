@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Promotions - Sevra Store</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <a href="index.html" class="logo">Sevra</a>
+    <button class="hamburger">☰</button>
+    <nav class="menu">
+      <a href="index.html">Home</a>
+      <a href="all-products.html">Products</a>
+      <a href="promotions.html">Promotions</a>
+      <a href="about.html">About</a>
+      <a href="#">Contact</a>
+    </nav>
+  </header>
+
+  <!-- Page Title -->
+  <main>
+    <section class="products">
+      <h1>Special Promotions</h1>
+      <div id="promotions-list" class="grid-container"></div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    &copy; 2024 Sevra Store. All rights reserved.
+  </footer>
+
+  <script>
+    // Hamburger Menu
+    const hamburger = document.querySelector('.hamburger');
+    const menu = document.querySelector('.menu');
+    hamburger.addEventListener('click', () => menu.classList.toggle('show'));
+
+    // Load promotions (simulate with discount > 10)
+    async function loadPromotions() {
+      try {
+        const res = await fetch("https://dummyjson.com/products?limit=30");
+        const data = await res.json();
+        const container = document.getElementById("promotions-list");
+
+        const promoProducts = data.products.filter(p => p.discountPercentage > 10);
+
+        promoProducts.forEach(product => {
+          const item = document.createElement("article");
+          item.className = "grid-item";
+          item.innerHTML = `
+            <h3>${product.title}</h3>
+            <img src="${product.thumbnail}" alt="${product.title}">
+            <p>${product.description.substring(0, 60)}...</p>
+            <p><del>${(product.price / (1 - product.discountPercentage/100)).toFixed(2)} $</del> <strong>${product.price} $</strong></p>
+            <span class="badge">-${Math.round(product.discountPercentage)}%</span>
+            <a href="product.html?id=${product.id}" class="btn">Grab Deal</a>
+          `;
+          container.appendChild(item);
+        });
+      } catch (error) {
+        console.error("Error loading promotions:", error);
+      }
+    }
+    loadPromotions();
+  </script>
+</body>
+</html>

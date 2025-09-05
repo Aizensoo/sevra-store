@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Checkout - Sevra Store</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: "Oswald", sans-serif;
+      background: rgb(165, 165, 165);
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background: #111;
+      color: #ffffff47;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header .logo { font-size: 1.5rem; font-weight: bold; }
+    main {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 1.5rem;
+      background: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h2 { margin-bottom: 1rem; }
+    .checkout-container {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 2rem;
+    }
+    form label {
+      display: block;
+      margin: 0.5rem 0 0.2rem;
+      font-weight: bold;
+    }
+    form input, form select {
+      width: 100%;
+      padding: 0.7rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    .order-summary {
+      background: #fafafa;
+      padding: 1rem;
+      border-radius: 6px;
+      border: 1px solid #eee;
+    }
+    .order-summary h3 { margin-bottom: 1rem; }
+    .order-summary ul { list-style: none; padding: 0; }
+    .order-summary li {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+    .total { font-weight: bold; border-top: 1px solid #ccc; padding-top: 0.5rem; }
+    .btn {
+      display: inline-block;
+      margin-top: 1rem;
+      padding: 0.8rem 1.5rem;
+      background: #111;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 6px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">Sevra</div>
+    <nav>
+      <a href="index.html" style="color:#fff; margin-right:1rem;">Home</a>
+      <a href="cart.html" style="color:#fff;">Cart</a>
+    </nav>
+  </header>
+
+  <main>
+    <h2>Checkout</h2>
+    <div class="checkout-container">
+      <!-- Checkout Form -->
+      <form>
+        <h3>Billing Details</h3>
+        <label for="name">Full Name</label>
+        <input type="text" id="name" placeholder="John Doe" required>
+
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="you@example.com" required>
+
+        <label for="address">Address</label>
+        <input type="text" id="address" placeholder="123 Main St" required>
+
+        <label for="city">City</label>
+        <input type="text" id="city" required>
+
+        <label for="payment">Payment Method</label>
+        <select id="payment" required>
+          <option value="">-- Select --</option>
+          <option value="card">Credit / Debit Card</option>
+          <option value="paypal">PayPal</option>
+          <option value="cod">Cash on Delivery</option>
+        </select>
+
+        <button type="submit" class="btn">Place Order</button>
+      </form>
+
+      <!-- Order Summary -->
+      <div class="order-summary">
+        <h3>Your Order</h3>
+        <ul>
+          <li><span>Product 1</span><span>$20</span></li>
+          <li><span>Product 2</span><span>$15</span></li>
+          <li><span>Shipping</span><span>$5</span></li>
+        </ul>
+        <p class="total">Total: $40</p>
+      </div>
+    </div>
+  </main>
+  
+</body>
+</html>

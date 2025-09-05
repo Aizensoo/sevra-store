@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Details</title>
+  <style>
+    body { font-family: "Oswald", sans-serif; margin: 20px; background: #f9f9f9; }
+    header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #303030; border-bottom: 1px solid #ddd; }
+    .logo { font-size: 24px; font-weight: bold; color: #ffffff; text-decoration: none; }
+    .logo:hover { text-decoration: none; color: rgba(255,255,255,0.6); }
+
+    .hamburger { font-size: 28px; background: none; border: none; cursor: pointer; color: #fff; }
+    .menu { display: none; flex-direction: column; background: rgba(0,0,0,0.9); position: absolute; top: 60px; right: 20px; padding: 10px; border-radius: 8px; }
+    .menu.show { display: flex; }
+    .menu a { color: #ffffff; padding: 10px; text-decoration: none; border-radius: 8px; }
+    .menu a:hover { background: rgba(255, 255, 255, 0.2); }
+
+    .product-container { display: flex; flex-wrap: wrap; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-top: 30px; }
+    .product-image { flex: 1 1 300px; display: flex; justify-content: center; align-items: center; }
+    .product-image img { width: 100%; max-width: 350px; border-radius: 8px; }
+    .product-info { flex: 1 1 400px; padding: 20px; }
+    .product-info h2 { margin-bottom: 15px; }
+    .product-info p { margin-bottom: 10px; color: #333; }
+    .price { font-size: 1.8rem; font-weight: bold; margin: 20px 0; color: #28a745; }
+
+    .btn { padding: 12px 20px; background: #007BFF; color: #fff; border: none; border-radius: 8px; text-decoration: none; display: inline-block; margin-right: 10px; transition: 0.2s; }
+    .btn:hover { background: #0056b3; }
+    .btn-secondary { background: #6c757d; }
+    .btn-secondary:hover { background: #565e64; }
+
+    @media (max-width: 768px) {
+      .product-container { flex-direction: column; }
+      .product-image, .product-info { flex: 1 1 100%; }
+      .product-image { margin-bottom: 20px; }
+      h1 { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <a href="index.html" class="logo">Sevra</a>
+    <button class="hamburger">☰</button>
+    <nav class="menu">
+      <a href="index.html">Home</a>
+      <a href="#">About</a>
+      <a href="#">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Product Details</h1>
+    <div id="product-container" class="product-container">
+      Loading product...
+    </div>
+    <div style="margin-top:20px;">
+      <a href="index.html" class="btn btn-secondary">⬅ Back to Products</a>
+    </div>
+  </main>
+
+  <script>
+    // Toggle menu
+    const hamburger = document.querySelector('.hamburger');
+    const menu = document.querySelector('.menu');
+    hamburger.addEventListener('click', () => {
+      menu.classList.toggle('show');
+    });
+
+    // Get product id from URL (?id=1)
+    const params = new URLSearchParams(window.location.search);
+    const productId = params.get("id");
+
+    // Fetch product from local JSON or API
+    async function loadProduct() {
+      try {
+        const res = await fetch('products.json'); 
+        const data = await res.json();
+        
+        // ابحث عن المنتج بالـ id
+        const product = data.products.find(p => p.id == productId) || data.products[0];
+
+        document.getElementById("product-container").innerHTML = `
+          <div class="product-image">
+            <img src="${product.thumbnail || 'placeholder.png'}" alt="${product.title}">
+          </div>
+          <div class="product-info">
+            <h2>${product.title}</h2>
+            <p>${product.description}</p>
+            <p class="price">$${product.price}</p>
+            <a href="CART.html?id=${product.id}" class="btn">Add to Cart</a>
+            <a href="checkout.html?id=${product.id}" class="btn">Buy Now</a>
+          </div>
+        `;
+      } catch (error) {
+        console.error("Error loading product:", error);
+        document.getElementById("product-container").innerHTML = "<p>Error loading product.</p>";
+      }
+    }
+
+    loadProduct();
+  </script>
+</body>
+</html>
