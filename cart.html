@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cart - Sevra Store</title>
+  <style>
+    body { font-family: "Oswald", sans-serif; background: #f4f4f4; margin: 0; padding: 0; }
+    header { background: #111; color: #fff; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+    header .logo { font-size: 1.5rem; font-weight: bold; }
+    main { max-width: 900px; margin: 2rem auto; padding: 1.5rem; background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; }
+    th, td { padding: 0.8rem; border-bottom: 1px solid #ddd; text-align: center; }
+    th { background: #eee; }
+    .btn { display: inline-block; margin: 0.5rem 0; padding: 0.6rem 1.2rem; background: #111; color: #fff; text-decoration: none; border-radius: 6px; cursor: pointer; }
+    .btn-danger { background: #e74c3c; }
+    .total { font-weight: bold; font-size: 1.2rem; text-align: right; }
+    .empty { text-align: center; font-size: 1.1rem; margin: 2rem 0; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">Sevra</div>
+    <nav>
+      <a href="index.html" style="color:#fff; margin-right:1rem;">Home</a>
+      <a href="checkout.html" style="color:#fff;">Checkout</a>
+    </nav>
+  </header>
+
+  <main>
+    <h2>Your Cart</h2>
+    <div id="cartContent"></div>
+  </main>
+
+ <script>
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  const cartContent = document.getElementById("cartContent");
+
+  async function renderCart() {
+    if (cart.length === 0) {
+      cartContent.innerHTML = `<p class="empty">🛒 Your cart is empty.</p>`;
+      return;
+    }
+
+    // جلب المنتجات من ملف JSON
+    const res = await fetch("products.json");
+    const products = await res.json();
+
+    let total = 0;
+    let tableHTML = `
+      <table>
+        <thead>
+          <tr>
+            <th>Image</th>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Qty</th>
+            <th>Subtotal</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+    cart.forEach((item, index) => {
+      const product = products.find(p => p.id === item.id);
+      if (!product) return;
+
+      const subtotal = product.price * item.quantity;
+      total += subtotal;
+
+      tableHTML += `
+        <tr>
+          <td><img src="${product.img}" alt="${product.name}" style="width:60px; border-radius:6px;"></td>
+          <td>${product.name}</td>
+          <td>$${product.price.toFixed(2)}</td>
+          <td>
+            <input type="number" min="1" value="${item.quantity}"
+              onchange="updateQuantity(${index}, this.value)" 
+              style="width:60px; text-align:center;">
+          </td>
+          <td>$${subtotal.toFixed(2)}</td>
+          <td><button class="btn btn-danger" onclick="removeItem(${index})">Remove</button></td>
+        </tr>
+      `;
+    });
+
+    tableHTML += `
+        </tbody>
+      </table>
+      <p class="total">Total: $${total.toFixed(2)}</p>
+      <a href="checkout.html" class="btn">Go to Checkout</a>
+    `;
+
+    cartContent.innerHTML = tableHTML;
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }
+
+  function updateQuantity(index, newQty) {
+    cart[index].quantity = parseInt(newQty);
+    renderCart();
+  }
+
+  function removeItem(index) {
+    cart.splice(index, 1);
+    renderCart();
+  }
+
+  renderCart();
+</script>
+
+</body>
+</html>

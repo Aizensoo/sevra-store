@@ -64,6 +64,13 @@
       }
     }
     loadAllProducts();
+    async function loadProducts() {
+  const res = await fetch("http://localhost:5000/products?keyword=watch");
+  const products = await res.json();
+
+  // اعرضهم أو خزنهم في localStorage
+}
+
   </script>
 </body>
 </html>

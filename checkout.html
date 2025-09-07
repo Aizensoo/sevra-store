@@ -6,71 +6,20 @@
   <title>Checkout - Sevra Store</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    body {
-      font-family: "Oswald", sans-serif;
-      background: rgb(165, 165, 165);
-      margin: 0;
-      padding: 0;
-    }
-
-    header {
-      background: #111;
-      color: #ffffff47;
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+    body { font-family: "Oswald", sans-serif; background: rgb(165, 165, 165); margin: 0; padding: 0; }
+    header { background: #111; color: #ffffff47; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
     header .logo { font-size: 1.5rem; font-weight: bold; }
-    main {
-      max-width: 900px;
-      margin: 2rem auto;
-      padding: 1.5rem;
-      background: #ffffff;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
+    main { max-width: 900px; margin: 2rem auto; padding: 1.5rem; background: #ffffff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
     h2 { margin-bottom: 1rem; }
-    .checkout-container {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 2rem;
-    }
-    form label {
-      display: block;
-      margin: 0.5rem 0 0.2rem;
-      font-weight: bold;
-    }
-    form input, form select {
-      width: 100%;
-      padding: 0.7rem;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-    }
-    .order-summary {
-      background: #fafafa;
-      padding: 1rem;
-      border-radius: 6px;
-      border: 1px solid #eee;
-    }
+    .checkout-container { display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; }
+    form label { display: block; margin: 0.5rem 0 0.2rem; font-weight: bold; }
+    form input, form select { width: 100%; padding: 0.7rem; border: 1px solid #ccc; border-radius: 6px; }
+    .order-summary { background: #fafafa; padding: 1rem; border-radius: 6px; border: 1px solid #eee; }
     .order-summary h3 { margin-bottom: 1rem; }
     .order-summary ul { list-style: none; padding: 0; }
-    .order-summary li {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 0.5rem;
-    }
+    .order-summary li { display: flex; justify-content: space-between; margin-bottom: 0.5rem; }
     .total { font-weight: bold; border-top: 1px solid #ccc; padding-top: 0.5rem; }
-    .btn {
-      display: inline-block;
-      margin-top: 1rem;
-      padding: 0.8rem 1.5rem;
-      background: #111;
-      color: #fff;
-      text-decoration: none;
-      border-radius: 6px;
-      text-align: center;
-    }
+    .btn { display: inline-block; margin-top: 1rem; padding: 0.8rem 1.5rem; background: #111; color: #fff; text-decoration: none; border-radius: 6px; text-align: center; }
   </style>
 </head>
 <body>
@@ -85,8 +34,9 @@
   <main>
     <h2>Checkout</h2>
     <div class="checkout-container">
+      
       <!-- Checkout Form -->
-      <form>
+      <form id="checkoutForm">
         <h3>Billing Details</h3>
         <label for="name">Full Name</label>
         <input type="text" id="name" placeholder="John Doe" required>
@@ -114,15 +64,57 @@
       <!-- Order Summary -->
       <div class="order-summary">
         <h3>Your Order</h3>
-        <ul>
-          <li><span>Product 1</span><span>$20</span></li>
-          <li><span>Product 2</span><span>$15</span></li>
-          <li><span>Shipping</span><span>$5</span></li>
-        </ul>
-        <p class="total">Total: $40</p>
+        <ul id="orderItems"></ul>
+        <p class="total" id="orderTotal"></p>
       </div>
     </div>
   </main>
-  
+
+  <script>
+    // جلب المنتجات من localStorage (حيث خزنا الكارت من قبل)
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const orderItems = document.getElementById("orderItems");
+    const orderTotal = document.getElementById("orderTotal");
+
+    let total = 0;
+    cart.forEach(item => {
+      const li = document.createElement("li");
+      li.innerHTML = `<span>${item.name} (x${item.quantity})</span><span>$${item.price * item.quantity}</span>`;
+      orderItems.appendChild(li);
+      total += item.price * item.quantity;
+    });
+    orderTotal.textContent = "Total: $" + total;
+
+    // إرسال الطلب للسيرفر
+    const form = document.getElementById("checkoutForm");
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const orderData = {
+        name: document.getElementById("name").value,
+        email: document.getElementById("email").value,
+        address: document.getElementById("address").value,
+        city: document.getElementById("city").value,
+        payment: document.getElementById("payment").value,
+        cart: cart,
+        total: total
+      };
+
+      try {
+        const response = await fetch("http://localhost:5000/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(orderData),
+        });
+
+        const result = await response.json();
+        alert(result.message || "Order placed successfully!");
+        localStorage.removeItem("cart"); // تفريغ السلة بعد الطلب
+      } catch (err) {
+        alert("Error sending order: " + err.message);
+      }
+    });
+  </script>
+
 </body>
 </html>

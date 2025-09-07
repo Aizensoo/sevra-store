@@ -8,7 +8,7 @@
     body { font-family: "Oswald", sans-serif; margin: 20px; background: #f9f9f9; }
     header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #303030; border-bottom: 1px solid #ddd; }
     .logo { font-size: 24px; font-weight: bold; color: #ffffff; text-decoration: none; }
-    .logo:hover { text-decoration: none; color: rgba(255,255,255,0.6); }
+    .logo:hover { color: rgba(255,255,255,0.6); }
 
     .hamburger { font-size: 28px; background: none; border: none; cursor: pointer; color: #fff; }
     .menu { display: none; flex-direction: column; background: rgba(0,0,0,0.9); position: absolute; top: 60px; right: 20px; padding: 10px; border-radius: 8px; }
@@ -24,7 +24,7 @@
     .product-info p { margin-bottom: 10px; color: #333; }
     .price { font-size: 1.8rem; font-weight: bold; margin: 20px 0; color: #28a745; }
 
-    .btn { padding: 12px 20px; background: #007BFF; color: #fff; border: none; border-radius: 8px; text-decoration: none; display: inline-block; margin-right: 10px; transition: 0.2s; }
+    .btn { padding: 12px 20px; background: #007BFF; color: #fff; border: none; border-radius: 8px; text-decoration: none; display: inline-block; margin-right: 10px; transition: 0.2s; cursor: pointer; }
     .btn:hover { background: #0056b3; }
     .btn-secondary { background: #6c757d; }
     .btn-secondary:hover { background: #565e64; }
@@ -44,7 +44,7 @@
     <button class="hamburger">☰</button>
     <nav class="menu">
       <a href="index.html">Home</a>
-      <a href="#">About</a>
+      <a href="cart.html">Cart</a>
       <a href="#">Contact</a>
     </nav>
   </header>
@@ -59,46 +59,72 @@
     </div>
   </main>
 
-  <script>
-    // Toggle menu
-    const hamburger = document.querySelector('.hamburger');
-    const menu = document.querySelector('.menu');
-    hamburger.addEventListener('click', () => {
-      menu.classList.toggle('show');
-    });
+<script>
+  // toggle menu
+  const hamburger = document.querySelector('.hamburger');
+  const menu = document.querySelector('.menu');
+  hamburger.addEventListener('click', () => menu.classList.toggle('show'));
 
-    // Get product id from URL (?id=1)
-    const params = new URLSearchParams(window.location.search);
-    const productId = params.get("id");
+  // الحصول على ID من الرابط
+  const params = new URLSearchParams(window.location.search);
+  const productId = parseInt(params.get("id"));
 
-    // Fetch product from local JSON or API
-    async function loadProduct() {
-      try {
-        const res = await fetch('products.json'); 
-        const data = await res.json();
-        
-        // ابحث عن المنتج بالـ id
-        const product = data.products.find(p => p.id == productId) || data.products[0];
+  async function loadProduct() {
+    const res = await fetch("products.json");
+    const products = await res.json();
+    const product = products.find(p => p.id === productId);
 
-        document.getElementById("product-container").innerHTML = `
-          <div class="product-image">
-            <img src="${product.thumbnail || 'placeholder.png'}" alt="${product.title}">
-          </div>
-          <div class="product-info">
-            <h2>${product.title}</h2>
-            <p>${product.description}</p>
-            <p class="price">$${product.price}</p>
-            <a href="CART.html?id=${product.id}" class="btn">Add to Cart</a>
-            <a href="checkout.html?id=${product.id}" class="btn">Buy Now</a>
-          </div>
-        `;
-      } catch (error) {
-        console.error("Error loading product:", error);
-        document.getElementById("product-container").innerHTML = "<p>Error loading product.</p>";
-      }
+    if (product) {
+      document.getElementById("product-container").innerHTML = `
+        <div class="product-image">
+          <img src="${product.img}" alt="${product.name}">
+        </div>
+        <div class="product-info">
+          <h2>${product.name}</h2>
+          <p>${product.description || "No description available."}</p>
+          <p class="price">
+            $${product.price} 
+            <span style="text-decoration:line-through; color:#777; font-size:1rem;">
+              $${product.oldPrice}
+            </span>
+          </p>
+          <button class="btn" onclick="addToCart(${product.id})">Add to Cart</button>
+          <button class="btn" onclick="buyNow(${product.id})">Buy Now</button>
+        </div>
+      `;
+    } else {
+      document.getElementById("product-container").innerHTML = "<p>Product not found.</p>";
     }
+  }
 
-    loadProduct();
-  </script>
+  function addToCart(id) {
+    fetch("products.json")
+      .then(res => res.json())
+      .then(products => {
+        const p = products.find(x => x.id === id);
+        if (!p) return;
+
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        const existing = cart.find(item => item.id === id);
+
+        if (existing) {
+          existing.quantity += 1;
+        } else {
+          cart.push({ id:p.id, name:p.name, price:p.price, quantity:1 });
+        }
+
+        localStorage.setItem("cart", JSON.stringify(cart));
+        alert(p.name + " added to cart!");
+      });
+  }
+
+  function buyNow(id) {
+    addToCart(id);
+    window.location.href = "checkout.html";
+  }
+
+  loadProduct();
+</script>
+
 </body>
 </html>
